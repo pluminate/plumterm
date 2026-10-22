@@ -601,6 +601,19 @@ function TerminalPane({ sessionId = 'default', cwd = null, initialLastCommand = 
           ipcRenderer.send('terminal.keystroke', { sessionId, data: '\x1b\x7f' });
           return false;
         }
+        // Ctrl+Shift+C → copy, Ctrl+(Shift+)V → paste; plain Ctrl+C stays SIGINT
+        if (e.ctrlKey && e.shiftKey && !e.metaKey && !e.altKey && e.key.toLowerCase() === 'c') {
+          e.preventDefault();
+          const text = term.getSelection();
+          if (text) ipcRenderer.invoke('app.writeClipboard', { text });
+          return false;
+        }
+        // Plain Ctrl+V also pastes (deliberate deviation from GNOME Terminal, where it sends ^V)
+        if (e.ctrlKey && !e.metaKey && !e.altKey && e.key.toLowerCase() === 'v') {
+          e.preventDefault();
+          ipcRenderer.invoke('app.readClipboard').then((text) => { if (text) term.paste(text); });
+          return false;
+        }
         // Ctrl+C → send SIGINT to PTY and cancel pending rerun
         if (e.ctrlKey && !e.metaKey && e.key === 'c' && e.type === 'keydown') {
           cancelRerun(sessionId);

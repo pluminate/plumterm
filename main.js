@@ -811,8 +811,9 @@ function setupMenu() {
         { role: 'redo' },
         { type: 'separator' },
         { role: 'cut' },
-        { role: 'copy' },
-        { role: 'paste' },
+        // Ctrl+C/V are shell keys on Linux/Windows; the terminal handles Ctrl+Shift+C/V itself
+        { role: 'copy', registerAccelerator: process.platform === 'darwin' },
+        { role: 'paste', registerAccelerator: process.platform === 'darwin' },
         // Ctrl+A is "start of line" in a shell, so only macOS uses the bare Cmd+A
         {
           label: 'Select All',
