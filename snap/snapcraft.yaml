@@ -1,0 +1,57 @@
+name: plumterm
+adopt-info: plumterm
+title: PlumTerm
+summary: Terminal emulator with split panes and git tools
+description: |
+  PlumTerm is a modern terminal emulator with split panes
+  and built-in git tools, built with Electron.
+base: core24
+grade: stable
+confinement: classic
+license: Proprietary
+contact: plumterm@pluminate.com
+compression: lzo
+
+platforms:
+  amd64:
+  arm64:
+
+apps:
+  plumterm:
+    command: plumterm --no-sandbox --disable-dev-shm-usage
+    desktop: usr/share/applications/plumterm.desktop
+
+parts:
+  plumterm:
+    plugin: dump
+    # Prepared by scripts/build-snap.sh (electron-builder `dir` output + version.txt)
+    source: dist/snap-app
+    override-build: |
+      craftctl set version="$(cat version.txt)"
+      craftctl default
+      rm -f version.txt
+      mkdir -p $CRAFT_PART_INSTALL/usr/share/icons
+      mv $CRAFT_PART_INSTALL/plumterm-icon.png $CRAFT_PART_INSTALL/usr/share/icons/plumterm.png
+      mkdir -p $CRAFT_PART_INSTALL/usr/share/applications
+      cat > $CRAFT_PART_INSTALL/usr/share/applications/plumterm.desktop <<DESKTOP
+      [Desktop Entry]
+      Name=PlumTerm
+      Comment=Terminal emulator with split panes and git tools
+      Exec=plumterm %U
+      Icon=\${SNAP}/usr/share/icons/plumterm.png
+      Terminal=false
+      Type=Application
+      Categories=Development;System;TerminalEmulator;
+      DESKTOP
+    stage-packages:
+      - libnss3
+      - libnspr4
+      - libgtk-3-0t64
+      - libasound2t64
+      - libxss1
+      - libxtst6
+      - libgbm1
+      - libatk-bridge2.0-0t64
+      - libdrm2
+      - libxkbcommon0
+      - libsecret-1-0

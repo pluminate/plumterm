@@ -1,0 +1,18 @@
+node_modules/
+dist/
+.DS_Store
+*.log
+*.pem
+.env
+.env.local
+client/dist/
+out/
+
+# Local / editor files
+.claude/
+.idea/
+.roadmap/
+pnpm-lock.yaml
+SPLIT_PANE_BUG.md
+test-commit.md
+test-file.md
